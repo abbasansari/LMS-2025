@@ -33,6 +33,12 @@ export function Login() {
     }
   };
 
+  //handleSubmit function
+  const handleSubmit = (type) => {
+    let data = type === "signup" ? signupInput : loginInput;
+    console.log(data);
+  };
+
   return (
     <div className="flex justify-center items-center h-screen">
       <Tabs defaultValue="signup" className="w-[400px]">
@@ -82,7 +88,13 @@ export function Login() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button>Signup</Button>
+              <Button
+                onClick={() => {
+                  handleSubmit("signup");
+                }}
+              >
+                Signup
+              </Button>
               <Button className="ml-4 bg-blue-500 ">Continue wit google</Button>
             </CardFooter>
           </Card>
@@ -120,7 +132,13 @@ export function Login() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button>Save password</Button>
+              <Button
+                onClick={() => {
+                  handleSubmit("login");
+                }}
+              >
+                Save password
+              </Button>
             </CardFooter>
           </Card>
         </TabsContent>
