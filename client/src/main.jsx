@@ -5,12 +5,17 @@ import App from "./App.jsx";
 import { store } from "./redux/store";
 import { Provider } from "react-redux";
 import ErrorBoundary from "./components/error";
+import { Toaster } from "./components/ui/sonner";
+import { BrowserRouter } from "react-router-dom";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={store}>
       <ErrorBoundary>
-        <App />
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+        <Toaster />
       </ErrorBoundary>
     </Provider>
   </StrictMode>

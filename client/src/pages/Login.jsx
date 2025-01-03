@@ -10,7 +10,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState } from "react";
+import { useLoginMutation, useRegisterMutation } from "@/redux/api/authApi";
+import { useEffect, useState } from "react";
+import { is } from "./../../node_modules/immer/src/utils/common";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export function Login() {
   const [signupInput, setSignupInput] = useState({
@@ -23,6 +27,25 @@ export function Login() {
     password: "",
   });
 
+  const [
+    register,
+    {
+      data: registerData,
+      error: registerError,
+      isLoading: registerIsLoading,
+      isSuccess: registerIsSuccess,
+    },
+  ] = useRegisterMutation();
+  const [
+    login,
+    {
+      data: loginData,
+      error: loginError,
+      isLoading: loginIsLoading,
+      isSuccess: loginIsSuccess,
+    },
+  ] = useLoginMutation();
+
   //Input Change Handler
   const handleInputChange = (e, type) => {
     const { name, value } = e.target;
@@ -34,10 +57,34 @@ export function Login() {
   };
 
   //handleSubmit function
-  const handleSubmit = (type) => {
+  const handleSubmit = async (type) => {
     let data = type === "signup" ? signupInput : loginInput;
+    const action = type === "signup" ? register : login;
+    await action(data);
+    console.log(registerError, registerIsLoading, registerIsSuccess);
+
     console.log(data);
   };
+
+  useEffect(() => {
+    if (registerIsSuccess && registerData) {
+      toast.success(
+        registerData.message,
+        "success",
+        "Account created successfully"
+      );
+    }
+    if (loginData && loginIsSuccess) {
+      toast.success(loginData.message, "success", "Login successful");
+    }
+    if (registerError || loginError) {
+      toast(
+        registerData.data.message ||
+          loginData.data.message ||
+          "Error Something went wrong"
+      );
+    }
+  }, [loginData, registerData, registerIsSuccess]);
 
   return (
     <div className="flex justify-center items-center h-screen">
@@ -93,9 +140,17 @@ export function Login() {
                   handleSubmit("signup");
                 }}
               >
-                Signup
+                {registerIsLoading ? (
+                  <>
+                    <Loader2 className="animate-spin" size={20} />
+                  </>
+                ) : (
+                  "Signup"
+                )}
               </Button>
-              <Button className="ml-4 bg-blue-500 ">Continue wit google</Button>
+              <Button disabled={true} className="ml-4 bg-blue-500 ">
+                Continue wit google
+              </Button>
             </CardFooter>
           </Card>
         </TabsContent>
@@ -116,7 +171,7 @@ export function Login() {
                   onChange={(e) => handleInputChange(e, "login")}
                   type="text"
                   placeholder="Your email"
-                  required="true"
+                  required
                 />
               </div>
               <div className="space-y-1">
@@ -127,17 +182,24 @@ export function Login() {
                   onChange={(e) => handleInputChange(e, "login")}
                   type="password"
                   placeholder="Your password"
-                  required="true"
+                  required
                 />
               </div>
             </CardContent>
             <CardFooter>
               <Button
+                disabled={loginIsLoading}
                 onClick={() => {
                   handleSubmit("login");
                 }}
               >
-                Save password
+                {loginIsLoading ? (
+                  <>
+                    <Loader2 className="animate-spin" size={20} />
+                  </>
+                ) : (
+                  "Login"
+                )}
               </Button>
             </CardFooter>
           </Card>

@@ -3,12 +3,12 @@ import React, { Component } from "react";
 class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, errorMessage: null };
   }
 
   static getDerivedStateFromError(error) {
     // Update state so the next render will show the fallback UI.
-    return { hasError: true };
+    return { hasError: true, errorMessage: error.toString() };
   }
 
   componentDidCatch(error, errorInfo) {
@@ -18,8 +18,12 @@ class ErrorBoundary extends Component {
 
   render() {
     if (this.state.hasError) {
-      // You can render any custom fallback UI
-      return <h1>Something went wrong.</h1>;
+      return (
+        <div style={{ color: "red", padding: "1rem" }}>
+          <h2>Something went wrong!</h2>
+          <p>Error: {this.state.errorMessage}</p>
+        </div>
+      );
     }
 
     return this.props.children;
